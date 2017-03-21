@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Over Here</title>
+
+        <style>
+           #gpsMap {
+            height: 400px;
+            width: 50%;
+           }
+        </style>
+
+            <!-- Bootstrap Core CSS -->
+        <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css"/>
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- Plugin JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+        <script src="https://code.highcharts.com/highcharts.src.js"></script>
+        <!--<script src="js/script.js"></script>-->
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- Plugin JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+        <script>
+
+        gpsData = {};
+        gpsData.lattitude = 0;
+        gpsData.longitude = 0;
+
+            $(document).ready(function(){
+                $.support.cors = true;
+                    (function AccelGraphWorker() {
+                        var url = 'http://192.168.31.114:8080/findall';
+                      $.get(url, function(accelData) {
+                        // Now that we've completed the request schedule the next one.
+                        if(accelData != null || accelData.length != 0){
+                            xarray = [];
+                            yarray = [];
+                            zarray = [];
+                            accelerationArray = [];
+                            timeArray = [];
+                            for(var i = 0;i < accelData.length;i++)
+                            {
+                                accelerationArray.push(Math.sqrt((accelData[i].xaxis*accelData[i].xaxis) 
+                                        + (accelData[i].yaxis * accelData[i].yaxis)
+                                        + (accelData[i].zaxis * accelData[i].zaxis)) -9.8);
+                                xarray.push(accelData[i].xaxis);
+                                yarray.push(accelData[i].yaxis);
+                                zarray.push(accelData[i].zaxis);
+                                timeArray.push(accelData[i].timestamp);
+                            }
+
+                            chartContainer = document.getElementById('chartContainer');
+                            var chart = {
+                                    type: 'spline',
+                                    renderTo: chartContainer,
+                                    marginRight: 10,
+                                    width:800,
+                                    height:600
+                                    
+                                };
+
+                            var title = {
+                              text: 'Acceleration of Device'   
+                               };
+                            var subtitle = {
+                                  text: 'Nexus 5'
+                               };
+                            var xAxis = {
+                                  categories: xarray
+                                  
+                               };
+                            var yAxis = {
+                                  title: {
+                                     text: 'Acceleration (m/s)'
+                                  },
+                                  plotLines: [{
+                                     value: 0,
+                                     width: 1,
+                                     color: '#808080'
+                                  }]
+                               };   
+
+                            var tooltip = {
+                                  valueSuffix: 'm/s'
+                               }
+
+                            var legend = {
+                                  layout: 'vertical',
+                                  align: 'right',
+                                  verticalAlign: 'middle',
+                                  borderWidth: 0
+                               };
+
+                            var series =  [
+                                {
+                                 name: 'X Array',
+                                 data: xarray
+                                }, 
+                                {
+                                 name: 'Y Axis',
+                                 data: yarray
+                                },
+                                {
+                                 name: 'Z Axis',
+                                 data: zarray
+                                },
+                                                        {
+                                 name: 'Accleration',
+                                 data: accelerationArray
+                                }];
+
+                           var json = {};
+
+                           json.title = title;
+                           json.chart = chart;
+                           json.subtitle = subtitle;
+                           json.xAxis = xAxis;
+                           json.yAxis = yAxis;
+                           json.tooltip = tooltip;
+                           json.legend = legend;
+                           json.series = series;
+
+                           //$('#chartContainer').highcharts(json);
+                          chart = new Highcharts.Chart(json);
+                          //console.log(chart);
+                          //alert("Load was performed.");
+
+                        }
+                        setTimeout(AccelGraphWorker, 3000);
+                      });
+                    })();
+
+
+                    var url = 'http://192.168.31.114:8080/findLatestGPS';
+                    $.get(url, function(gps) {
+                        if(gps != null || gps.length != 0){
+                            gpsData.longitude = gps.longitude;
+                            gpsData.lattitude = gps.lattitude;
+                            console.log(gps);
+                            console.log(gpsData);
+                        }
+                    });
+                
+            });
+
+            function initMap() {
+                
+                var home = {lat: gpsData.lattitude, lng: gpsData.longitude};
+                var map = new google.maps.Map(document.getElementById('gpsMap'), {
+                  zoom: 4,
+                  center: home
+                });
+                
+                var marker = new google.maps.Marker({
+                  position: home,
+                  map: map
+            });
+        }
+
+                        
+
+        </script>
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYHZ6-eOwasYp0Y2IIMTcXwE2F-etjRLg&callback=initMap">
+        </script>
+
+    </head>
+
+    <body>
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand" href="#page-top">Over Here!</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="/signIn">Sign In</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <h1></h1>
+        <center>
+        <div id="chartContainer"> A chart</div>
+        <h1></h1>
+        <div id="gpsMap">A map</div>
+        </center>
+
+    </body>
+</html>

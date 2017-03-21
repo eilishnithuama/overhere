@@ -37,6 +37,11 @@ public class MyRestController {
     	return new ResponseEntity<Fall>(fall,HttpStatus.OK);
     }
     
+    @RequestMapping("/")
+    public String home(){
+    	return "index";
+    }
+    
     @RequestMapping(value="/saveGPS",method=RequestMethod.POST)
     public ResponseEntity<GPSLocation> process(@RequestBody GPSLocation gps){
     	gpsRepo.save(gps);
