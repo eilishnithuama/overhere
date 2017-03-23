@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* project.com.RestProjectApplication
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* project.rest.RestProjectApplication
