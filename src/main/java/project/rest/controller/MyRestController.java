@@ -13,7 +13,7 @@ import project.rest.entities.User;
 import project.rest.repository.FallRepository;
 import project.rest.repository.GPSLocationRepository;
 import project.rest.repository.UserRepository;
-import service.FallService;
+import project.rest.service.FallService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
