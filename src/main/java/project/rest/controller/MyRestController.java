@@ -13,6 +13,7 @@ import project.rest.entities.User;
 import project.rest.repository.FallRepository;
 import project.rest.repository.GPSLocationRepository;
 import project.rest.repository.UserRepository;
+import service.FallService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyRestController {
 	
 	@Autowired
-	FallRepository fallRepo;
+	FallService fallService;
 	@Autowired
 	GPSLocationRepository gpsRepo;
 	@Autowired
@@ -32,7 +33,7 @@ public class MyRestController {
 	
     @RequestMapping(value="/saveAccel",method=RequestMethod.POST)
     public ResponseEntity<Fall> process(@RequestBody Fall fall){
-    	fallRepo.save(fall);
+    	fallService.save(fall);
     	
     	return new ResponseEntity<Fall>(fall,HttpStatus.OK);
     }
@@ -52,13 +53,21 @@ public class MyRestController {
     @CrossOrigin
     @RequestMapping(value = "/findall")
     public Iterable<Fall> findAll(){
-        return fallRepo.findAll();
+        return fallService.findAll();
     }
+    
+    @CrossOrigin
+    @RequestMapping(value = "/findLatest")
+    public Fall findLatest(){
+        return fallService.findLatest();
+    }
+    
+    
     
     @CrossOrigin
     @RequestMapping(value = "/findbyid")
     public @ResponseBody Fall findById(@RequestParam("id") int id){
-        return fallRepo.findById(id);
+        return fallService.findById(id);
         
     }
     
