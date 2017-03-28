@@ -1,8 +1,8 @@
 package project.rest.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +14,28 @@ public class FallService {
 	
 	@Autowired
 	FallRepository fallRepo;
+	int size = 0;
 
 	public Fall findById(int id) {
 		return fallRepo.findById(id);
 	}
 
 	public Fall findLatest() {
-		Iterable <Fall> fullList = fallRepo.findAll();
-		List<Fall> myList = Lists.newArrayList(fullList);
-		return myList.get(myList.size()-1);
+		if(size == 0){
+			Iterable<Fall> fullList = fallRepo.findAll();
+			ArrayList<Fall> myList = new ArrayList<Fall>();
+			for(Fall fall : fullList){
+				myList.add(fall);
+			}
+			size = myList.size();
+			return myList.get((myList).size());
+			
+		}
+		else{
+			size++;
+			return fallRepo.findById(size-1);
+		}
+		
 	}
 
 	public Iterable<Fall> findAll() {

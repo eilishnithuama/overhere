@@ -9,18 +9,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import project.rest.entities.Fall;
 import project.rest.entities.GPSLocation;
+import project.rest.entities.HeartRate;
 import project.rest.entities.User;
-import project.rest.repository.FallRepository;
 import project.rest.repository.GPSLocationRepository;
+import project.rest.repository.HeartRateRepository;
 import project.rest.repository.UserRepository;
 import project.rest.service.FallService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@Controller
 @RestController
 public class MyRestController {
 	
@@ -28,6 +31,8 @@ public class MyRestController {
 	FallService fallService;
 	@Autowired
 	GPSLocationRepository gpsRepo;
+	@Autowired
+	HeartRateRepository heartRepo;
 	@Autowired
 	UserRepository userRepo;
 	
@@ -49,6 +54,15 @@ public class MyRestController {
     	
     	return new ResponseEntity<GPSLocation>(gps,HttpStatus.OK);
     }
+    
+    @RequestMapping(value="/saveHeart",method=RequestMethod.POST)
+    public ResponseEntity<HeartRate>process(@RequestBody HeartRate heart){
+    	heartRepo.save(heart);
+    	
+    	return new ResponseEntity<HeartRate>(heart,HttpStatus.OK);
+    	
+    }
+    
        
     @CrossOrigin
     @RequestMapping(value = "/findall")
